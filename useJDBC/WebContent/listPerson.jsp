@@ -24,15 +24,18 @@
 					<td>${person.age}
 					<c:if test="${person.age<=12}">岁是儿童</c:if>
 					<c:if test="${person.age>12}">岁是少年</c:if>
+					<c:if test="${person.age>18}">岁是成年</c:if>
 					</td>
 					<td>
 					<a href="#">修改</a>
-					<a href="#">删除</a>
+					<a href="${pageContext.request.contextPath}/personServlet?op=deletePerson&name=${person.name}"
+					onclick="if(confirm('确定要删除嘛')) return true;else return false">删除</a>
 					</td>
 					</tr>
 					</c:forEach>
 			</table>
-			总计有<c:out value="${personList.size()}"/>条信息
+			总计有<c:out value="${personList.size()}"/>条信息 &nbsp; 
+			<a href="${pageContext.request.contextPath}/personServlet?op=addPerson">添加</a>
 		</center>
 </body>
 </html>

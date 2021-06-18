@@ -8,7 +8,7 @@
 </head>
 <body>
 <div align="center" style="margin-top:100px">
-<a href="${pageContext.request.contextPath}/personServlet">查询所有Person信息</a>
+<a href="${pageContext.request.contextPath}/personServlet?op=listPerson">查询所有Person信息</a>
 </div>
 </body>
 </html>
