@@ -20,34 +20,14 @@ public class personServlet extends HttpServlet {
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html;charest=UTF-8");
 		request.setCharacterEncoding("UTF-8");
-		// mysql 5.7及以下
-		String dbDriver = "com.mysql.jdbc.Driver";// 数据库驱动
-		String dbUrl = "jdbc:mysql://127.0.0.1:3306/javawebdb?characterEncoding=UTF-8";// 数据库服务器地址
-		String username = "root";// mysql账号
-		String password = "root";// mysql密码
-		// 连接数据并查询
+		connDB connDB = new connDB();
 		String op = request.getParameter("op");
-		// 查询所有
 		if (op != null && op.equals("listPerson")) {
-			Connection conn = null;
-			Statement stmt = null;
 			ResultSet rs = null;
 			List<person> personList = new ArrayList<person>();
 			try {
-				// mysql8及以下
-				// String dbDriver="com.mysql.cj.jdbc.Driver";
-				// String
-				// dbUrl="jdbc:mysql://127.0.0.1:3306/javawebdb?serverTimezone=GMT%2B8&useSSL=false";
-				// 1.注册数据库驱动
-				Class.forName(dbDriver);
-				// 2.数据库的链接
-				conn = DriverManager.getConnection(dbUrl, username, password);
-				// 3.获取Statement对象
-				stmt = conn.createStatement();
-				// 4.使用Statement执行sql语句
 				String sql = "select * from person";
-				rs = stmt.executeQuery(sql);// 执行查询，获得结果集
-				// 5.操作rs结果集
+				rs = connDB.doQuery(sql);
 				while (rs.next()) {
 					person person = new person();
 					String name = rs.getString("name");
@@ -58,120 +38,50 @@ public class personServlet extends HttpServlet {
 			} catch (Exception e) {
 				e.printStackTrace();
 			} finally {
-				// 6.断开链接释放资源
-				if (rs != null) {
-					try {
-						rs.close();
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-					rs = null;
-				}
-				if (stmt != null) {
-					try {
-						stmt.close();
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-					stmt = null;
-				}
-				if (conn != null) {
-					try {
-						conn.close();
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-					conn = null;
-				}
+				connDB.closeConnection();
 			}
 			request.setAttribute("personList", personList);
 			request.getRequestDispatcher("/listPerson.jsp").forward(request, response);
 		}
 		// 按照name来删除
 		if (op != null && op.equals("deletePerson")) {
-			Connection conn = null;
-			Statement stmt = null;
-			ResultSet rs = null;
 			String name = request.getParameter("name");
 			try {
-				// 1.注册数据库驱动
-				Class.forName(dbDriver);
-				// 2.数据库的链接
-				conn = DriverManager.getConnection(dbUrl, username, password);
-				// 3.获取Statement对象
-				stmt = conn.createStatement();
-				// 4.使用Statement执行sql语句
 				String sql = "delete from person where name='" + name + "'";
 				System.out.println(sql);
-				int num = stmt.executeUpdate(sql);
+				int num = connDB.doUpdate(sql);
 				System.out.println("num" + num);
 				response.sendRedirect(request.getContextPath() + "/personServlet?op=listPerson");
 			} catch (Exception e) {
 				e.printStackTrace();
 			} finally {
-				if (rs != null) {
-					try {
-						rs.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-					rs = null;
-				}
-				if (stmt != null) {
-					try {
-						stmt.close();
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-					stmt = null;
-				}
-				if (conn != null) {
-					try {
-						conn.close();
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-					conn = null;
-				}
+				connDB.closeConnection();
 			}
 		}
 		// 新增person
 		if (op != null && op.equals("addPerson")) {
-			Connection conn = null;
-			Statement stmt = null;
-			PreparedStatement perStmt = null;
 			try {
-				// 1.注册数据库驱动
-				Class.forName(dbDriver);
-				// 2.数据库的链接
-				conn = DriverManager.getConnection(dbUrl, username, password);
-				// 3.获取Statement对象
-				stmt = conn.createStatement();
-				// 4.使用Statement执行sql语句
 				String sql = "insert into person(name,age) values('王宏',12)";
-				int num = stmt.executeUpdate(sql);
-				// 5.返回执行结果
+				int num = connDB.doUpdate(sql);
 				response.sendRedirect(request.getContextPath() + "/personServlet?op=listPerson");
 			} catch (Exception e) {
 				e.printStackTrace();
 			} finally {
-			
-				if (stmt != null) {
-					try {
-						stmt.close();
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-					stmt = null;
-				}
-				if (conn != null) {
-					try {
-						conn.close();
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-					conn = null;
-				}
+				connDB.closeConnection();
+			}
+		}
+		//修改
+		if (op != null && op.equals("updatePerson")) {
+			try {
+				String name=request.getParameter("name");
+				String sql = "update person set age=18 where name='"+name+"'";
+				int num = connDB.doUpdate(sql);
+				response.sendRedirect(request.getContextPath() + "/personServlet?op=listPerson");
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+
+				connDB.closeConnection();
 			}
 		}
 	}

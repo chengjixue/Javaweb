@@ -27,7 +27,8 @@
 					<c:if test="${person.age>18}">岁是成年</c:if>
 					</td>
 					<td>
-					<a href="#">修改</a>
+					<a href="${pageContext.request.contextPath}/personServlet?op=updatePerson&name=${person.name}"
+					onclick="if(confirm('确定要修改嘛')) return true;else return false">修改</a>
 					<a href="${pageContext.request.contextPath}/personServlet?op=deletePerson&name=${person.name}"
 					onclick="if(confirm('确定要删除嘛')) return true;else return false">删除</a>
 					</td>
